@@ -20,3 +20,4 @@ Route::get('dashbmw',['as'=>'dashboard.dashbmw','uses'=>'DashboardController@das
 Route::get('api/get-total-backlog','DashboardController@totalBacklog');
 Route::get('api/get-aging','DashboardController@totalAging');
 Route::get('api/get-pesquisa-satisfacao','DashboardController@PesquisaSatisfacao');
+Route::get('dashboard_cst',['as'=>'dashboard_cst.index','uses'=>'DashboardController@dashcst']);

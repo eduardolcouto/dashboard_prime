@@ -20,21 +20,41 @@ class DashBoardController extends Controller
         //$slaIniEstourando =$this->dashboard->slaIniEstourando();
         //$slaContEstourando =$this->dashboard->slaContEstourando();
         $pendencias =$this->dashboard->chamadosPendencia();
-        $emSuporte =$this->dashboard->chamadosEmSuporte(); 
-        $agurdandoSuporte = $this->dashboard->chamadosAguardando(); 
-        $celula1Triagem = $this->dashboard->celula1Triagem(); 
-        $celula1Distribuicao = $this->dashboard->celula1Distribuicao(); 
-        $celula2Triagem = $this->dashboard->celula2Triagem(); 
-        $celula2Distribuicao = $this->dashboard->celula2Distribuicao();  
+        $emSuporte =$this->dashboard->chamadosEmSuporte();
+        $agurdandoSuporte = $this->dashboard->chamadosAguardando();
+        $celula1Triagem = $this->dashboard->celula1Triagem();
+        $celula1Distribuicao = $this->dashboard->celula1Distribuicao();
+        $celula2Triagem = $this->dashboard->celula2Triagem();
+        $celula2Distribuicao = $this->dashboard->celula2Distribuicao();
 
         return view('dashboard.dashboard',
                         compact('pendencias',
                                 'emSuporte',
-                                'agurdandoSuporte', 
+                                'agurdandoSuporte',
                                 'celula1Triagem',
                                 'celula1Distribuicao',
                                 'celula2Triagem',
                                 'celula2Distribuicao')
+                    );
+    }
+
+    public function dashcst()
+    {
+        $celulaTriagemCustom = $this->dashboard->celulaTriagemCustom();
+        $celulaDistribuicaoCustom = $this->dashboard->celulaDistribuicaoCustom();
+        $celulaCstEwerton = $this->dashboard->celulaCstEwerton();
+        $celulaCstEmersonCasado = $this->dashboard->celulaCstEmersonCasado();
+        $celulaCstLucianaDevera = $this->dashboard->celulaCstLucianaDevera();
+        $celulaCstTotal = $this->dashboard->celulaCstTotal();
+        //$celulaCoordenacaoCustom = $this->dashboard->celulaCoordenacaoCustom();
+
+        return view('dashboard.dashboard_cst',
+                        compact('celulaTriagemCustom',
+                                'celulaDistribuicaoCustom',
+                                'celulaCstEwerton',
+                                'celulaCstEmersonCasado',
+                                'celulaCstLucianaDevera',
+                                'celulaCstTotal')
                     );
     }
 

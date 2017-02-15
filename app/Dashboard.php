@@ -46,7 +46,7 @@ class Dashboard{
 		       AND T.sla_cont_restante between  -40 and 5
 		       and t.ID_STATUS_ATUAL in ('AS','ES','PR')
 		       and t.dsc_sla_contingencia is null
-		       order by T.sla_cont_restante 
+		       order by T.sla_cont_restante
 		");
 		return $data;
 	}
@@ -54,7 +54,7 @@ class Dashboard{
 	public function chamadoPorAnalistas()
 	{
 		$data = DB::select("
-			SELECT 
+			SELECT
 				   (substr(T.DSC_ANALISTA_SUPORTE,1,instr(T.DSC_ANALISTA_SUPORTE,' ',1))
            			||
             		substr(T.DSC_ANALISTA_SUPORTE,instr(T.DSC_ANALISTA_SUPORTE,' ',-1)+1)
@@ -68,7 +68,7 @@ class Dashboard{
 				      FROM DSC_VW_PRINCIPAL_PRIME t
 				     WHERE t.id_dashboard = 121
 				       and t.ID_STATUS_ATUAL in ('AS','ES','PR')
-				       order by T.dt_cad_chamado  
+				       order by T.dt_cad_chamado
 		");
 		return $data;
 	}
@@ -76,7 +76,7 @@ class Dashboard{
 	public function chamadosEmSuporte()
 	{
 		$data = DB::select("
-			SELECT 
+			SELECT
 				   (substr(T.DSC_ANALISTA_SUPORTE,1,instr(T.DSC_ANALISTA_SUPORTE,' ',1))
            			||
             		substr(T.DSC_ANALISTA_SUPORTE,instr(T.DSC_ANALISTA_SUPORTE,' ',-1)+1)
@@ -90,7 +90,7 @@ class Dashboard{
 				      FROM DSC_VW_PRINCIPAL_PRIME t
 				     WHERE t.id_dashboard = 121
 				       and t.ID_STATUS_ATUAL = ('ES')
-				       order by T.dt_cad_chamado  
+				       order by T.dt_cad_chamado
 		");
 		return $data;
 	}
@@ -98,7 +98,7 @@ class Dashboard{
 	public function chamadosAguardando()
 	{
 		$data = DB::select("
-			SELECT 
+			SELECT
 				   (substr(T.DSC_ANALISTA_SUPORTE,1,instr(T.DSC_ANALISTA_SUPORTE,' ',1))
            			||
             		substr(T.DSC_ANALISTA_SUPORTE,instr(T.DSC_ANALISTA_SUPORTE,' ',-1)+1)
@@ -112,7 +112,7 @@ class Dashboard{
 				      FROM DSC_VW_PRINCIPAL_PRIME t
 				     WHERE t.id_dashboard = 121
 				       and t.ID_STATUS_ATUAL = ('AS')
-				       order by T.dt_cad_chamado  
+				       order by T.dt_cad_chamado
 		");
 		return $data;
 	}
@@ -120,7 +120,7 @@ class Dashboard{
 	public function chamadosPendencia()
 	{
 		$data = DB::select("
-			SELECT 
+			SELECT
 				   (substr(T.DSC_ANALISTA_SUPORTE,1,instr(T.DSC_ANALISTA_SUPORTE,' ',1))
            			||
             		substr(T.DSC_ANALISTA_SUPORTE,instr(T.DSC_ANALISTA_SUPORTE,' ',-1)+1)
@@ -134,7 +134,7 @@ class Dashboard{
 				      FROM DSC_VW_PRINCIPAL_PRIME t
 				     WHERE t.id_dashboard = 121
 				       and t.ID_STATUS_ATUAL = ('PR')
-				       order by T.dt_cad_chamado  
+				       order by T.dt_cad_chamado
 		");
 		return $data;
 	}
@@ -158,10 +158,10 @@ class Dashboard{
 			   and t.dt_cad_chamado > add_months(sysdate, -2)
 			   and t.nome_cliente = 'BMW'
 			   ORDER BY DT_ORDERBY
-		
+
 		");
 		return $data;
-	}	
+	}
 
 	public function totalBacklog()
 	{
@@ -172,7 +172,7 @@ class Dashboard{
 
 		return count($data);
 
-		
+
 	}
 
 	public function totalAging()
@@ -180,16 +180,16 @@ class Dashboard{
 		$data = DB::connection('oracle2')->select("
 			select *
 			  from (select ano_mes, aging from dsc_vw_aging_prime order by ano_mes desc)
-			 where rownum <= 3			
+			 where rownum <= 3
 		");
-		
+
 		return $data;
 	}
 
 	public function pesquisaSatisfacao()
 	{
 		$data = DB::select("
-					SELECT 
+					SELECT
 					  QTDE_AVALIACOES,
 					  DESCRICAO_PESQUISA
 					FROM dsc_vw_pesq_satisfacao_prime
@@ -277,4 +277,118 @@ class Dashboard{
 
 		return $data;
 	}
+
+	public function celulaTriagemCustom()
+	{
+		$data = DB::select("
+		SELECT     T.CHAMADO,
+					 T.DSC_SISTEMA,
+					 T.DSC_STATUS_ATUAL,
+					 T.DSC_PRIORIDADE_CLIENTE,
+					 round(T.SLA_INI_RESTANTE,2) SLA_INI_RESTANTE,
+					 round(T.sla_cont_restante,2) sla_cont_restante,
+					 T.NOME_CLIENTE,
+					 t.fila as dsc_fila
+				FROM DSC_VW_PRINCIPAL_CUSTOM t
+			 WHERE t.id_dashboard = 121
+						 and t.fila = 'SER - TRIAGEM'
+							 and t.id_status_atual not in ('EC','F','C')
+				 order by T.SLA_INI_RESTANTE
+		");
+		return $data;
+	}
+
+		public function celulaDistribuicaoCustom()
+		{
+			$data = DB::select("
+			SELECT     T.CHAMADO,
+						 T.DSC_SISTEMA,
+						 T.DSC_STATUS_ATUAL,
+						 T.DSC_PRIORIDADE_CLIENTE,
+						 round(T.SLA_INI_RESTANTE,2) SLA_INI_RESTANTE,
+						 round(T.sla_cont_restante,2) sla_cont_restante,
+						 T.NOME_CLIENTE,
+						 t.fila as dsc_fila
+					FROM DSC_VW_PRINCIPAL_CUSTOM t
+				 WHERE t.id_dashboard = 121
+							 and t.fila = 'SER - DISTRIBUIÇÃO'
+								 and t.id_status_atual not in ('EC','F','C')
+					 order by T.SLA_INI_RESTANTE
+			");
+			return $data;
+		}
+
+			public function celulaCstTotal()
+			{
+				$data = DB::select("
+				SELECT COUNT(*) AS TOTAL
+          FROM DSC_VW_PRINCIPAL_CUSTOM t
+         WHERE t.id_dashboard = 121
+           and t.fila = 'SER - COORDENAÇÃO'
+           and t.id_status_atual not in ('EC', 'F', 'C', 'ATC', 'ED')
+				");
+
+		return $data;
+	}
+
+	public function celulaCstEwerton()
+	{
+		$data = DB::select("
+		SELECT     T.CHAMADO,
+					 T.DSC_SISTEMA,
+					 T.DSC_STATUS_ATUAL,
+					 T.DSC_PRIORIDADE_CLIENTE,
+					 round(T.SLA_INI_RESTANTE,2) SLA_INI_RESTANTE,
+					 round(T.sla_cont_restante,2) sla_cont_restante,
+					 T.NOME_CLIENTE,
+					 t.fila as dsc_fila
+				FROM DSC_VW_PRINCIPAL_CUSTOM t
+			 WHERE t.id_dashboard = 121
+						 and t.fila = 'SER - EWERTON DARIO'
+							 and t.id_status_atual not in ('EC','F','C','ATC')
+				 order by T.SLA_INI_RESTANTE, sla_cont_restante
+		");
+		return $data;
+	}
+
+	public function celulaCstEmersonCasado()
+	{
+		$data = DB::select("
+		SELECT     T.CHAMADO,
+					 T.DSC_SISTEMA,
+					 T.DSC_STATUS_ATUAL,
+					 T.DSC_PRIORIDADE_CLIENTE,
+					 round(T.SLA_INI_RESTANTE,2) SLA_INI_RESTANTE,
+					 round(T.sla_cont_restante,2) sla_cont_restante,
+					 T.NOME_CLIENTE,
+					 t.fila as dsc_fila
+				FROM DSC_VW_PRINCIPAL_CUSTOM t
+			 WHERE t.id_dashboard = 121
+						 and t.fila = 'SER - EMERSON CASADO'
+							 and t.id_status_atual not in ('EC','F','C','ATC')
+				 order by T.SLA_INI_RESTANTE, sla_cont_restante
+		");
+		return $data;
+	}
+
+	public function celulaCstLucianaDevera()
+	{
+		$data = DB::select("
+		SELECT     T.CHAMADO,
+					 T.DSC_SISTEMA,
+					 T.DSC_STATUS_ATUAL,
+					 T.DSC_PRIORIDADE_CLIENTE,
+					 round(T.SLA_INI_RESTANTE,2) SLA_INI_RESTANTE,
+					 round(T.sla_cont_restante,2) sla_cont_restante,
+					 T.NOME_CLIENTE,
+					 t.fila as dsc_fila
+				FROM DSC_VW_PRINCIPAL_CUSTOM t
+			 WHERE t.id_dashboard = 121
+						 and t.fila = 'SER - LUCIANA DEVERA'
+							 and t.id_status_atual not in ('EC','F','C','ATC')
+				 order by T.SLA_INI_RESTANTE, sla_cont_restante
+		");
+		return $data;
+	}
+
 }
